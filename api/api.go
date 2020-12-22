@@ -97,12 +97,18 @@ func StartServer(Port int) {
 
 	log.Printf("-------------starting sever at %d -------\n", Port)
 
-	router.HandleFunc("/", auth.BasicAuth(homepage))
+	router.HandleFunc("/", auth.AuthenticatedWithJWT(homepage))
 	router.HandleFunc("/api/users", auth.BasicAuth(getUsers)).Methods("GET")
 	router.HandleFunc("/api/users/{id}", auth.BasicAuth(getUser)).Methods("GET")
 	router.HandleFunc("/api/users", createUser).Methods("POST")
 	router.HandleFunc("/api/users/{id}", updateUser).Methods("PUT")
 	router.HandleFunc("/api/users/{id}", deleteUser).Methods("DELETE")
+
+	token, err := auth.GenerateJWT()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(token)
 
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(Port), router))
 }
