@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -65,23 +66,51 @@ func Test_getUser(t *testing.T) {
 }
 
 func Test_createUser(t *testing.T) {
+	go StartServer(8080)
 	var requests []Requests
 	requests = append(requests, Requests{
-		Method:             "GET",
+		Method:             "POST",
 		URL:                "http://localhost:8080/api/users",
-		Body:               nil,
-		ExpectedStatusCode: 200,
+		Body:               strings.NewReader(`{"id":"6","name":"heheh"}`),
+		ExpectedStatusCode: 201,
 		ExpectedResponse:   "",
 	})
+	processTest(t, requests)
 
 }
 
 func Test_updateUser(t *testing.T) {
+	go StartServer(8080)
+	var requests []Requests
+	requests = append(requests, Requests{
+		Method:             "PUT",
+		URL:                "http://localhost:8080/api/users/1",
+		Body:               strings.NewReader(`{"name":"heheh"}`),
+		ExpectedStatusCode: 201,
+		ExpectedResponse:   "",
+	})
+	processTest(t, requests)
 
 }
 
 func Test_deleteUser(t *testing.T) {
-
+	go StartServer(8080)
+	var requests []Requests
+	requests = append(requests, Requests{
+		Method:             "DELETE",
+		URL:                "http://localhost:8080/api/users/1",
+		Body:               nil,
+		ExpectedStatusCode: 200,
+		ExpectedResponse:   "",
+	})
+	//requests = append(requests, Requests{
+	//	Method:             "DELETE",
+	//	URL:                "http://localhost:8080/api/users/1",
+	//	Body:               nil,
+	//	ExpectedStatusCode: 204,
+	//	ExpectedResponse:   "",
+	//})
+	processTest(t, requests)
 }
 
 func processTest(t *testing.T, requests []Requests) {
@@ -90,7 +119,7 @@ func processTest(t *testing.T, requests []Requests) {
 		r, err := http.NewRequest(req.Method, req.URL, req.Body)
 		r.Header.Add("Content-type", "application/json")
 		r.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("username:password")))
-		fmt.Println(r.Header)
+		fmt.Println("header = ", r.Header, r.URL, r.Method)
 		if err != nil {
 			log.Fatal(err)
 		}
