@@ -10,6 +10,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type Requests struct {
@@ -116,15 +118,16 @@ func Test_deleteUser(t *testing.T) {
 func processTest(t *testing.T, requests []Requests) {
 	client := http.DefaultClient
 	for _, req := range requests {
-		r, err := http.NewRequest(req.Method, req.URL, req.Body)
-		r.Header.Add("Content-type", "application/json")
-		r.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("username:password")))
-		fmt.Println("header = ", r.Header, r.URL, r.Method)
+		request, err := http.NewRequest(req.Method, req.URL, req.Body)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		resp, err := client.Do(r)
+		request.Header.Add("Content-type", "application/json")
+		request.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("username:password")))
+		fmt.Println("header = ", request.Header, request.URL, request.Method)
+
+		resp, err := client.Do(request)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -137,4 +140,42 @@ func processTest(t *testing.T, requests []Requests) {
 		}
 	}
 
+}
+
+func Test_deleteUser1(t *testing.T) {
+	go StartServer(8080)
+
+	type args struct {
+		Method             string
+		URL                string
+		Body               io.Reader
+		ExpectedStatusCode int
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Test 1",
+			args: args{
+				Method:             http.MethodDelete,
+				URL:                "http://localhost:8080/api/users/1",
+				Body:               nil,
+				ExpectedStatusCode: 200,
+			},
+		},
+	}
+	client := http.DefaultClient
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req, err := http.NewRequest(tt.args.Method, tt.args.URL, tt.args.Body)
+			req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("username:password")))
+			if err != nil {
+				t.Fatal(err)
+			}
+			res, err := client.Do(req)
+			assert.NoError(t, err)
+			assert.Equal(t, res.StatusCode, tt.args.ExpectedStatusCode)
+		})
+	}
 }

@@ -68,13 +68,12 @@ func AuthenticatedWithJWT(next http.HandlerFunc) http.HandlerFunc {
 
 			token, err := jwt.Parse(request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
 
-				if xx, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("there was an error")
-				} else {
-					fmt.Println(xx)
 				}
 
 				return secretKey, nil
+
 			})
 			if err != nil {
 				fmt.Println(err)
@@ -121,12 +120,13 @@ func hasBasicAuth(request *http.Request) bool {
 	return false
 }
 
+//IsAuthenticated is a function
 func IsAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
 		//has a token?
 		ok, err := hasJWT(request)
 		if err != nil {
-			fmt.Errorf("there was a error")
+			log.Fatal("there was a error")
 		}
 		if ok {
 			next.ServeHTTP(response, request)
@@ -145,7 +145,7 @@ func IsAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 			next.ServeHTTP(response, request)
 
 		} else {
-			response.WriteHeader(401) //unauthorized
+			response.WriteHeader(http.StatusUnauthorized) //unauthorized
 			return
 		}
 		//give user a token
