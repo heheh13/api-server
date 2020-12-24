@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/heheh13/api-server/auth"
@@ -148,6 +147,13 @@ func StartServer(Port int) {
 		fmt.Println(err)
 	}
 	fmt.Println(token)
+	Server := &http.Server{
+		Addr:    ":8080",
+		Handler: router,
+	}
 
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(Port), router))
+	//go func() {
+	Server.ListenAndServe()
+	//log.Fatal(http.ListenAndServe(":"+strconv.Itoa(Port), router))
+	//}()
 }

@@ -9,28 +9,28 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-//BasicAuth is for authenticating basic user
-func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
-	now := func(w http.ResponseWriter, r *http.Request) {
-
-		//will fetch from db
-		user := "username"
-		pass := "password"
-		username, password, authOk := r.BasicAuth()
-		if !authOk {
-			http.Error(w, "not authorized", http.StatusUnauthorized)
-			return
-		}
-		if username != user || password != pass {
-			http.Error(w, "not authorized", http.StatusUnauthorized)
-			return
-		}
-		next.ServeHTTP(w, r)
-
-	}
-
-	return now
-}
+////BasicAuth is for authenticating basic user
+//func BasicAuth(next http.HandlerFunc) http.HandlerFunc {
+//	now := func(response http.ResponseWriter, request *http.Request) {
+//
+//		//will fetch from db
+//		user := "username"
+//		pass := "password"
+//		username, password, authOk := request.BasicAuth()
+//		if !authOk {
+//			http.Error(response, "not authorized", http.StatusUnauthorized)
+//			return
+//		}
+//		if username != user || password != pass {
+//			http.Error(response, "not authorized", http.StatusUnauthorized)
+//			return
+//		}
+//		next.ServeHTTP(response, request)
+//
+//	}
+//
+//	return now
+//}
 
 var secretKey = []byte("mySecretKey")
 
@@ -49,46 +49,35 @@ func GenerateJWT() (string, error) {
 	return tokenString, nil
 }
 
-// VerifyJWT verify the jwt
-func VerifyJWT(tokenString string) (jwt.Claims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return secretKey, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return token.Claims, err
-
-}
-
-//AuthenticatedWithJWT is
-func AuthenticatedWithJWT(next http.HandlerFunc) http.HandlerFunc {
-	return func(response http.ResponseWriter, request *http.Request) {
-		if request.Header["Token"] != nil {
-
-			token, err := jwt.Parse(request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
-
-				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("there was an error")
-				}
-
-				return secretKey, nil
-
-			})
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println(token.Valid, token.Method, token.Claims, token.Header, token.Signature)
-			if token.Valid {
-				next.ServeHTTP(response, request)
-			}
-
-		} else {
-			log.Println("not authorized")
-		}
-	}
-
-}
+//
+////AuthenticatedWithJWT is
+//func AuthenticatedWithJWT(next http.HandlerFunc) http.HandlerFunc {
+//	return func(response http.ResponseWriter, request *http.Request) {
+//		if request.Header["Token"] != nil {
+//
+//			token, err := jwt.Parse(request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+//
+//				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+//					return nil, fmt.Errorf("there was an error")
+//				}
+//
+//				return secretKey, nil
+//
+//			})
+//			if err != nil {
+//				fmt.Println(err)
+//			}
+//			fmt.Println(token.Valid, token.Method, token.Claims, token.Header, token.Signature)
+//			if token.Valid {
+//				next.ServeHTTP(response, request)
+//			}
+//
+//		} else {
+//			log.Println("not authorized")
+//		}
+//	}
+//
+//}
 
 func hasJWT(request *http.Request) (bool, error) {
 	if request.Header["Token"] != nil {

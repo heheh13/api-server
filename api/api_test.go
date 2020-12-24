@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -68,7 +69,7 @@ func Test_getUser(t *testing.T) {
 }
 
 func Test_createUser(t *testing.T) {
-	go StartServer(8080)
+	// go StartServer(8080)
 	var requests []Requests
 	requests = append(requests, Requests{
 		Method:             "POST",
@@ -82,7 +83,7 @@ func Test_createUser(t *testing.T) {
 }
 
 func Test_updateUser(t *testing.T) {
-	go StartServer(8080)
+	// go StartServer(8080)
 	var requests []Requests
 	requests = append(requests, Requests{
 		Method:             "PUT",
@@ -96,7 +97,7 @@ func Test_updateUser(t *testing.T) {
 }
 
 func Test_deleteUser(t *testing.T) {
-	go StartServer(8080)
+	// go StartServer(8080)
 	var requests []Requests
 	requests = append(requests, Requests{
 		Method:             "DELETE",
@@ -139,11 +140,12 @@ func processTest(t *testing.T, requests []Requests) {
 			log.Printf("expected %d found %d", req.ExpectedStatusCode, resp.StatusCode)
 		}
 	}
+	time.Sleep(time.Second)
 
 }
 
 func Test_deleteUser1(t *testing.T) {
-	go StartServer(8080)
+	//go StartServer(8080)
 
 	type args struct {
 		Method             string
@@ -159,7 +161,7 @@ func Test_deleteUser1(t *testing.T) {
 			name: "Test 1",
 			args: args{
 				Method:             http.MethodDelete,
-				URL:                "http://localhost:8080/api/users/1",
+				URL:                "http://localhost:8080/api/users/2",
 				Body:               nil,
 				ExpectedStatusCode: 200,
 			},
