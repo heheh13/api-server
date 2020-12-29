@@ -1,5 +1,7 @@
 # api-server
 
+![Go Report Card](https://goreportcard.com/badge/github.com/heheh13/api-server)
+
 A simple api server as a learning purpose
 
 ## Running the server
