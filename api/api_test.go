@@ -125,7 +125,7 @@ func processTest(t *testing.T, requests []Requests) {
 		}
 
 		request.Header.Add("Content-type", "application/json")
-		request.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("username:password")))
+		request.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("heheh13:12345")))
 		fmt.Println("header = ", request.Header, request.URL, request.Method)
 
 		resp, err := client.Do(request)
@@ -145,7 +145,8 @@ func processTest(t *testing.T, requests []Requests) {
 }
 
 func Test_deleteUser1(t *testing.T) {
-	//go StartServer(8080)
+	go StartServer(8080)
+	//auth.Init()
 
 	type args struct {
 		Method             string
@@ -161,7 +162,7 @@ func Test_deleteUser1(t *testing.T) {
 			name: "Test 1",
 			args: args{
 				Method:             http.MethodDelete,
-				URL:                "http://localhost:8080/api/users/2",
+				URL:                "http://localhost:8080/api/users/3",
 				Body:               nil,
 				ExpectedStatusCode: 200,
 			},
@@ -171,7 +172,7 @@ func Test_deleteUser1(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			req, err := http.NewRequest(tt.args.Method, tt.args.URL, tt.args.Body)
-			req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("username:password")))
+			req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("heheh13:12345")))
 			if err != nil {
 				t.Fatal(err)
 			}

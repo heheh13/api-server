@@ -40,6 +40,24 @@ then we wrap the handler function to the authentication middleware to perform th
 To execute every http request has to go through the security check before it can hit the handler function.
 Which can simply implemented by adding the authorization in the request header
 
+## basic curl commands
+
+Get all users
+
+    curl -X GET --user heheh13:12345 http://localhost:8080/api/users
+
+Delete Specific user
+
+    curl -X DELETE --user heheh13:12345 http://localhost:8080/api/users/1
+
+Add a user
+
+    curl -X POST -d '{"id":"1","name":"Mehedi Hasan","skills":{"language":["c++,go"],"tools":["git","linux"],"endorsed":0}}' --user heheh13:12345 http://localhost:8080/api/users
+
+Update a user
+
+    curl -X PUT -d '{"name":"heheh"}' --user heheh13:12345 http://localhost:8080/api/users/1
+
 ## resources
 
 `https://www.youtube.com/watch?v=W5b64DXeP0o`
@@ -51,3 +69,15 @@ Which can simply implemented by adding the authorization in the request header
 `https://sysdevbd.com/go/#http-basic`
 
 `https://sysdevbd.com/go/#go-nethttp`
+
+## Docker
+
+`docker build -t <tagName:version> .` to build and images
+`docker run -p <port:port> <imageName> [cmd]` to run the images
+`docker start <containerName>` to start a container
+`docker rmi images (docker images -a- q` tp delete all container
+`docker container prune` to delete all containers
+
+## some notes on docker
+
+updating...

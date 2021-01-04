@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	//Port is flag to store the default port for http server
+	//Port is flag to store the default port for http server.
 	Port     int
 	startCmd = &cobra.Command{
 		Use:   "start",

@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/joho/godotenv"
 )
 
 ////BasicAuth is for authenticating basic user
@@ -31,8 +33,14 @@ import (
 //
 //	return now
 //}
+//Stores the secretkey for jwt check
+var secretKey []byte
 
-var secretKey = []byte("mySecretKey")
+//UserName get the user name from the environment file
+var UserName string
+
+//Password get the user name from the environment file
+var Password string
 
 //GenerateJWT will genearate jwt
 func GenerateJWT() (string, error) {
@@ -103,21 +111,54 @@ func hasBasicAuth(request *http.Request) bool {
 		return false
 	}
 	fmt.Println(username, password, authOk)
-	if username == "username" && password == "password" {
+	fmt.Println(UserName, Password)
+	if username == UserName && password == Password {
 		return true
 	}
 	return false
+}
+func validateCookie(value string) (bool, error) {
+	token, err := jwt.Parse(value, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("there was an error")
+		}
+		return secretKey, nil
+	})
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+	if token.Valid {
+		return true, nil
+	}
+	return false, nil
 }
 
 //IsAuthenticated is a function
 func IsAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 	return func(response http.ResponseWriter, request *http.Request) {
-		//has a token?
+
+		//has cookies?
+		for _, cookie := range request.Cookies() {
+			if cookie.Name == "Token" {
+				ok, err := validateCookie(cookie.Value)
+				if err != nil {
+					log.Println(err)
+				}
+				if ok {
+					log.Println("serve because of cookies")
+					next.ServeHTTP(response, request)
+					return
+				}
+			}
+		}
+		//has token?
 		ok, err := hasJWT(request)
 		if err != nil {
-			log.Fatal("there was a error")
+			log.Fatal("there was a error finding token")
 		}
 		if ok {
+			log.Println("serve because of has jwt token")
 			next.ServeHTTP(response, request)
 			return
 		}
@@ -129,14 +170,33 @@ func IsAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 			if err != nil {
 				log.Fatal(err)
 			}
+			cookie := http.Cookie{
+				Name:  "Token",
+				Value: token,
+				Path:  "/",
+			}
+			http.SetCookie(response, &cookie)
 			fmt.Println(token)
-			request.Header.Set("Token", token)
 			next.ServeHTTP(response, request)
-
-		} else {
-			response.WriteHeader(http.StatusUnauthorized) //unauthorized
 			return
+
 		}
-		//give user a token
+		response.WriteHeader(http.StatusUnauthorized) //unauthorized
+		return
 	}
+}
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	//UserName get the user name from the environment file
+	UserName = os.Getenv("UserName")
+
+	//Password get the user name from the environment file
+	Password = os.Getenv("Password")
+
+	//SecretKey stores the key to validate jwt
+	secretKey = []byte(os.Getenv("SecretKey"))
 }

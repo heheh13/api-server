@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/heheh13/api-server/auth"
@@ -142,18 +143,18 @@ func StartServer(Port int) {
 	router.HandleFunc("/api/users/{id}", auth.IsAuthenticated(updateUser)).Methods("PUT")
 	router.HandleFunc("/api/users/{id}", auth.IsAuthenticated(deleteUser)).Methods("DELETE")
 
-	token, err := auth.GenerateJWT()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(token)
+	// token, err := auth.GenerateJWT()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(token)
 	Server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + strconv.Itoa(Port),
 		Handler: router,
 	}
 
 	//go func() {
-	Server.ListenAndServe()
+	fmt.Println(Server.ListenAndServe())
 	//log.Fatal(http.ListenAndServe(":"+strconv.Itoa(Port), router))
 	//}()
 }

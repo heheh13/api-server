@@ -6,6 +6,9 @@
 *.dylib
 *.vscode
 *.idea
+
+#Thats shoudn't be up
+#*.env
 api-server
 
 # Test binary, built with `go test -c`
