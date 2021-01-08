@@ -78,6 +78,14 @@ Update a user
 `docker rmi images (docker images -a- q` tp delete all container
 `docker container prune` to delete all containers
 
-## some notes on docker
+## upload docker images
+
+`docker login --username=<docker_hub_username>`
+
+`docker tag <id_of_the_created_image> <docker_hub_username>/<name_of_the_image>:<tag>`
+
+`docker push <docker_hub_username>/<name_of_the_image>:<tag>`
+
+## notes on docker
 
 updating...
