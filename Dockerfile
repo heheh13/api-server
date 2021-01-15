@@ -19,6 +19,7 @@ FROM alpine
 
 WORKDIR /app
 ## defining flags from to copy form the previous os 
+RUN apk add curl
 COPY --from=builder /app/api-server .
 COPY .env .env
 
