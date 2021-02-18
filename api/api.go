@@ -136,7 +136,8 @@ func StartServer(Port int) {
 
 	log.Printf("-------------starting sever at %d -------\n", Port)
 
-	router.HandleFunc("/", auth.IsAuthenticated(homepage)) //login
+	// router.HandleFunc("/", auth.IsAuthenticated(homepage)) //login
+	router.HandleFunc("/", homepage)
 	router.HandleFunc("/api/users", auth.IsAuthenticated(getUsers)).Methods("GET")
 	router.HandleFunc("/api/users/{id}", auth.IsAuthenticated(getUser)).Methods("GET")
 	router.HandleFunc("/api/users", auth.IsAuthenticated(createUser)).Methods("POST")

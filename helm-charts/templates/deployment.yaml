@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+  {{- include "labels" . | nindent 4 }}
+  name: {{.Release.Name}}-deployment
+spec:
+  replicas: {{.Values.Deployment.Replicas}}
+  selector:
+    matchLabels:
+      {{- include "labels" . | nindent 6}}
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        {{- include "labels" . | nindent 8}}
+    spec:
+      containers:
+      {{- with .Values.Deployment}}
+      - image: {{.Image}}
+        name: {{.ContainerName}}
+      {{- end}}
