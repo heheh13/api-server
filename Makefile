@@ -8,14 +8,18 @@ registry ?= heheh13
 image_name ?= apiserver
 tag ?= latest
 
-## build the docker image and push to registry
+## build the docker image 
+
 ## since dokcer image contains all information to build the binary
 ## its seems better to me to buid the binary os independently
-push:
-#need to run the docker file
-	docker build -t ${registry}/${image_name}:${tag} .;\
-	docker push ${registry}/${image_name}:${tag}
+build:
+	docker build -t ${registry}/${image_name}:${tag} .
+	touch build
 
+## make push needs to build the docker image before push?
+push: build
+
+	docker push ${registry}/${image_name}:${tag}
 
 ## helm install and unistall using make...
 install:
@@ -23,3 +27,5 @@ install:
 uninstall:
 	helm uninstall ${image_name}
 
+clean:
+	rm -f build
